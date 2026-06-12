@@ -32,7 +32,6 @@ public class JournalEntryService {
     }
 
 
-
     // 4. delete the entry using the ID
     public void deleteById(ObjectId Id){
         journalEntryRepository.deleteById(Id);
