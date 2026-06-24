@@ -6,7 +6,9 @@ import com.edigest.myFirstFullProject.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,12 +23,20 @@ public class JournalEntryService {
     private UserService userService;
 
     // 1. method to save the JournalEntry
+    @Transactional
     public void saveEntry(JournalEntry journalEntry, String userName){
-        User user= userService.findByUserName(userName);
-        journalEntry.setDate(LocalDateTime.now());
-        JournalEntry saved = journalEntryRepository.save(journalEntry);
-        user.getJournalEntries().add(saved);
-        userService.saveEntry(user);
+        try{
+            User user = userService.findByUserName(userName);
+            journalEntry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalEntryRepository.save(journalEntry);
+            user.getJournalEntries().add(saved);
+            userService.saveEntry(user);
+        } catch (Exception e) {
+            System.out.println(e);
+
+            throw new RuntimeException("An error occurred while saving the entry", e);
+        }
+
     }
     // 1.A method to asave
     public void saveEntry(JournalEntry journalEntry){
